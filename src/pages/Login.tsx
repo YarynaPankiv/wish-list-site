@@ -6,33 +6,37 @@ import { login } from "../redux/userSlice";
 import styled from "styled-components";
 import { Navigate, useNavigate } from "react-router-dom";
 
+const USER_STORAGE_KEY = "wish-list-user";
+
 export default function Login() {
   const [user, setUser] = useState<any>(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+    const storedUser = localStorage.getItem(USER_STORAGE_KEY);
     if (storedUser) {
       const userData = JSON.parse(storedUser);
       setUser(userData);
       dispatch(login(userData));
       navigate("/my-wishlists");
     }
-  }, [dispatch]);
+  }, [dispatch, navigate]);
 
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
       const userData = {
-        uid: result.user.uid,
-        displayName: result.user.displayName,
-        email: result.user.email,
-        photoURL: result.user.photoURL,
+        uid: user.uid,
+        displayName: user.displayName,
+        email: user.email,
+        token: await user.getIdToken(),
       };
       setUser(userData);
-      localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userData));
       dispatch(login(userData));
+      navigate("/my-wishlists");
     } catch (error) {
       console.error("Error during Google login", error);
     }
@@ -41,8 +45,8 @@ export default function Login() {
   return (
     <Container>
       <LoginBox>
-        <Title>Login with Google</Title>
-        <LoginButton onClick={handleGoogleLogin}>Login</LoginButton>
+        <Title>Login</Title>
+        <LoginButton onClick={handleGoogleLogin}>Login with Google</LoginButton>
       </LoginBox>
     </Container>
   );
@@ -72,29 +76,12 @@ const Title = styled.h1`
 const LoginButton = styled.button`
   padding: 10px 20px;
   font-size: 16px;
-  color: white;
-  background-color: #4285f4;
+  cursor: pointer;
   border: none;
   border-radius: 5px;
-  cursor: pointer;
+  background-color: #4285f4;
+  color: white;
   &:hover {
     background-color: #357ae8;
-  }
-`;
-
-const UserInfo = styled.div`
-  img {
-    border-radius: 50%;
-    width: 80px;
-    height: 80px;
-    margin-bottom: 10px;
-  }
-  h2 {
-    font-size: 20px;
-    margin-bottom: 5px;
-  }
-  p {
-    font-size: 16px;
-    color: gray;
   }
 `;

@@ -72,10 +72,12 @@ export default function WishesGrid({
       console.error("Error updating wish reservation in Firestore:", error);
     }
   };
-
+  const handleClose = () => {
+    setIsPlusClicked(false);
+  };
   return (
     <StyledWishesGrid>
-      {isPlusClicked && <CreateWish addWish={addWish} />}
+      {isPlusClicked && <CreateWish addWish={addWish} onClose={handleClose} />}
 
       <StyledP2>{isOwner ? "Your wishes" : ownerName}</StyledP2>
       <AllWishes>

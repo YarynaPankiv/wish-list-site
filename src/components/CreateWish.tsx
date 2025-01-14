@@ -6,9 +6,10 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 interface CreateWishProps {
   addWish: (newWish: Wish) => void;
+  onClose: () => void;
 }
 
-export default function CreateWish({ addWish }: CreateWishProps) {
+export default function CreateWish({ addWish, onClose }: CreateWishProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [image, setImage] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null); // Store the image file
@@ -71,7 +72,7 @@ export default function CreateWish({ addWish }: CreateWishProps) {
   return (
     <Overlay>
       <Container>
-        <CloseButton onClick={() => console.log("Close modal")}>
+        <CloseButton onClick={onClose}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 384 512"
